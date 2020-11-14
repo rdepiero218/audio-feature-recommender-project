@@ -15,13 +15,13 @@ sp = spotipy.Spotify(auth_manager=auth_manager)
 now = datetime.now()
 tstamp = now.strftime('%Y%m%d_%H%M%S')
 
-genre = input('Enter a genre: ') 
+genre = input('Enter a genre: ')
 
-# limit = 50
-# max_requests = 2000
+limit = 50
+max_requests = 2000
 ### TESTING VALUES
-limit = 5# 50
-max_requests = 20 ## 2000
+# limit = 5# 50
+# max_requests = 20 ## 2000
 
 track_df = []
 for n in range(0, max_requests, limit):
@@ -55,4 +55,4 @@ tracks['popularity'] = np.round(tracks['popularity']/100, 2)
 genre = genre.replace(' ', '')
 tracks.to_csv(f'./data/{genre}.csv', index=False)
 
-print('Done!')
+print('We got your song sample there are ', tracks.shape[0], ' entries.')

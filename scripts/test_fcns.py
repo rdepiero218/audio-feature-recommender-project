@@ -3,22 +3,30 @@ import pandas as pd
 # import spotify_fcns as sf
 import recommender as r
 
-
+# import time
 
 ### give me a uri
 
 uri = '4HJ7mSMtHAdU55lLjGE4zW'
 
-genre = 'country'
+# uri = '17kv7O2z3dLHW0LnXaU5Pn' 
+
+# uri = '0SuFqlCe5i30Fr75ZlPQVT'
+
+# genre = 'popindie'
+
+genre = input('Enter a genre: ')
 
 num_tracks = 15
+
 
 
 ### CALL RECOMMENDER
 
 
-
 playlist = r.recommender(uri, genre, num_tracks)
+
+# r.create_playlist_file(playlist['track_id'])
 
 print(playlist)
 

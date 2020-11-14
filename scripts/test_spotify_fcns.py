@@ -3,6 +3,7 @@ import pandas as pd
 
 import spotify_fcns as sf
 
+import time
 
 ### give me a uri
 
@@ -15,9 +16,20 @@ num_tracks = 15
 
 track_info = sf.get_track_info(uri)
 
-track_df = sf.get_track_audio_features(track_info)
+# track_df = sf.get_track_audio_features(track_info)
 
+
+
+### Test getting data set in function
+genre = input('Enter a genre: ')
+
+df = sf.get_tracks(genre)
+
+print(df.head(2))
+
+track_df = sf.get_track_data(uri)
 print(track_df)
+
 ### CALL RECOMMENDER
 
 # playlist = r.recommender(uri, genre, num_tracks)

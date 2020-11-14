@@ -17,21 +17,33 @@ from sklearn.metrics.pairwise import linear_kernel, cosine_similarity, pairwise_
 # sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=clientID,
 #                                                            client_secret=clientSecret))
 
-
 def format_data(uri, genre):
-    df = pd.read_csv(f'./data/{genre}.csv')
-    track = sf.get_track_audio_features(uri)
+    ''' testing creating data set when you get the tracks'''
+    # genre = genre.replace(' ', '')
+    # df = pd.read_csv(f'./data/{genre}.csv')
+    df = sf.get_tracks(genre)
+    track = sf.get_track_data(uri)
     drop_cols = ['key', 'mode', 'time_signature', 'duration_ms']
     df.drop(columns=drop_cols, inplace=True)
     track.drop(columns=drop_cols, inplace=True)  ### not present in test set using here
     return df, track
 
 
+# def format_data(uri, genre):
+#     genre = genre.replace(' ', '')
+#     df = pd.read_csv(f'./data/{genre}.csv')
+#     track = sf.get_track_data(uri)
+#     drop_cols = ['key', 'mode', 'time_signature', 'duration_ms']
+#     df.drop(columns=drop_cols, inplace=True)
+#     track.drop(columns=drop_cols, inplace=True)  ### not present in test set using here
+#     return df, track
+
+
 def add_track_data(df, track):
+    ### desired features for model (may change later)
+    features = ['acousticness', 'danceability', 'energy', 'speechiness', 'valence', 'instrumentalness']
     ### Create X data
     data = pd.concat([df, track], ignore_index=True)
-    ### desired features for model (may change later)
-    features = ['acousticness', 'danceability', 'energy', 'speechiness', 'valence']
     X = data[features]
     return X, data
 
@@ -60,6 +72,7 @@ def pop_track_recommender(df, track):
     ### CREATE DF OF ALL SCORES
     rec_tracks_df = data[data['track_id'].isin(scores_ids.values)].copy()
     rec_tracks_df['score'] = similarity_scores
+    ### SORT DF BY SCORE AND POPULARITY
     rec_tracks_df.sort_values(by=['score', 'popularity'], ascending=False, inplace=True)
 
     return rec_tracks_df
@@ -81,11 +94,10 @@ def make_track_URIs(track_ids):
         track_URIs.append(uri)
     return track_URIs
 
-def create_playlist_file(track_ids, uri):
-    
+def create_playlist_file(track_ids):
     ### creates text file of Spotify URIs
     # track_list = og_track_id.values.tolist() + track_ids.values.tolist()
-    track_list = list(uri) + track_ids
+    track_list = track_ids.values.tolist()
     track_URIs = make_track_URIs(track_list)
     ### write URIs to text file
     playlist = open(fr'./playlist.txt','w')
@@ -93,15 +105,34 @@ def create_playlist_file(track_ids, uri):
     playlist.close()
     pass
 
+# def recommender(uri, genre, num_tracks):
+#     df, track_df = format_data(uri, genre)
+
+#     results = pop_track_recommender(df, track_df)
+
+#     top_tracks = top_tracks_recommended(results, num_tracks)
+
+#     ### create playlist df
+#     playlist = pd.concat([track_df, top_tracks], ignore_index=True)
+
+#     create_playlist_file(playlist['track_id'])
+
+#     return playlist
+
 def recommender(uri, genre, num_tracks):
+    ''' calling song sample on the fly '''
+
     df, track_df = format_data(uri, genre)
 
     results = pop_track_recommender(df, track_df)
 
     top_tracks = top_tracks_recommended(results, num_tracks)
 
-    # create_playlist_file(top_tracks['track_id'], uri)
+    ### create playlist df
+    playlist = pd.concat([track_df, top_tracks], ignore_index=True)
 
-    return top_tracks
+    create_playlist_file(playlist['track_id'])
+
+    return playlist
 
 
