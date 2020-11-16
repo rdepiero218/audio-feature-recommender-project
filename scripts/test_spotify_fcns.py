@@ -1,4 +1,5 @@
 
+## Script for testing functions in spotify_fcns.py which use spotipy for use in Streamlit app
 import pandas as pd
 
 import spotify_fcns as sf
